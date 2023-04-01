@@ -112,7 +112,7 @@ const char index_html[] PROGMEM = R"rawliteral(
       <button onclick="getJpgData()">Refresh Image</button>
     </p>
   </div>
-  <div><img src="#" id="image" width="70%"></div>
+  <div><img src="#" id="image" width="50%"></div>
 </body>
 <script>
   setInterval(function(){
@@ -352,10 +352,7 @@ void captureImageSaveSpiffs()
       return;
     }
 
-    // Create file in SPIFFS and open in write mode
-    Serial.printf("Picture file name: %s\n", SAVED_FILE);
-    File file = SPIFFS.open(SAVED_FILE, FILE_WRITE);
-
+    // Convert buffer to JPG
     size_t _jpgBufLen = 0;
     uint8_t *_jpgBuf = nullptr;
     bool _jpgConverted  = fmt2jpg(fb->buf, fb->len, fb->width, fb->height, PIXFORMAT_GRAYSCALE, 80, &_jpgBuf, &_jpgBufLen);
@@ -363,6 +360,11 @@ void captureImageSaveSpiffs()
       Serial.println("Frame to JPG conversion failed!");
     }
     size_t imageSizeBytes = _jpgBufLen;
+
+    // Create file in SPIFFS and open in write mode
+    Serial.printf("Picture file name: %s\n", SAVED_FILE);
+    File file = SPIFFS.open(SAVED_FILE, FILE_WRITE);
+
     // Save data to created file
     if (!file)
     {
